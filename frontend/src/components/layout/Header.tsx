@@ -89,7 +89,7 @@ export default function Header() {
                       <Settings className="h-4 w-4" /> Profile
                     </Link>
                     <Link to="/account/orders" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                      <Package className="h-4 w-4" /> Orders
+                      <Package className="h-4 w-4" /> Ordenes
                     </Link>
                     {isAdmin && (
                       <Link to="/admin" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
@@ -131,7 +131,7 @@ export default function Header() {
                   Profile
                 </Link>
                 <Link to="/account/orders" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
-                  Orders
+                  Ordenes
                 </Link>
                 {isAdmin && (
                   <Link to="/admin" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">

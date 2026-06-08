@@ -9,6 +9,7 @@ public interface NotificationService {
     NotificationDTO createNotification(NotificationDTO notificationDTO);
     NotificationDTO updateNotification(String id, NotificationDTO notificationDTO);
     void deleteNotification(String id);
+    void deleteReadNotifications(String userId);
     Optional<NotificationDTO> getNotificationById(String id);
     List<NotificationDTO> getNotificationsByUserId(String userId);
     List<NotificationDTO> getUnreadNotificationsByUserId(String userId);

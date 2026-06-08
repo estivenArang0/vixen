@@ -22,10 +22,10 @@ export default function CartPage() {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8">
         <EmptyState
-          title="Your cart is empty"
-          description="Add some products to get started."
+          title="Tu carrito está vacío"
+          description="Agrega productos a tu carrito para verlos aquí."
           icon={<ShoppingBag className="h-16 w-16" />}
-          action={<Link to="/products"><Button>Browse Products</Button></Link>}
+          action={<Link to="/products"><Button className="bg-pink-500 hover:bg-pink-600">Explorar Productos</Button></Link>}
         />
       </div>
     );
@@ -33,7 +33,7 @@ export default function CartPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-8">Tu Carrito</h1>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-4">
           {cart.items.map((item) => (
@@ -72,13 +72,13 @@ export default function CartPage() {
         </div>
 
         <div className="rounded-xl border border-gray-200 bg-white p-6 h-fit">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Resumen de la Orden</h2>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between"><span className="text-gray-500">Subtotal</span><span>{formatCurrency(cart.subtotal)}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Tax</span><span>{formatCurrency(cart.tax)}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Shipping</span><span>{formatCurrency(cart.shippingCost)}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Impuesto</span><span>{formatCurrency(cart.tax)}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Envío</span><span>{formatCurrency(cart.shippingCost)}</span></div>
             {cart.discount != null && cart.discount > 0 && (
-              <div className="flex justify-between text-green-600"><span>Discount</span><span>-{formatCurrency(cart.discount)}</span></div>
+              <div className="flex justify-between text-green-600"><span>Descuento</span><span>-{formatCurrency(cart.discount)}</span></div>
             )}
             <hr className="my-2" />
             <div className="flex justify-between text-base font-semibold">
@@ -86,7 +86,7 @@ export default function CartPage() {
             </div>
           </div>
           <Link to="/checkout" className="mt-6 block">
-            <Button className="w-full" size="lg">Proceed to Checkout</Button>
+            <Button className="w-full" size="lg">Proceder al Pago</Button>
           </Link>
         </div>
       </div>

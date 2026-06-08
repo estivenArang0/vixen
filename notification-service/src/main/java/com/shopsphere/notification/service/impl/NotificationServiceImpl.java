@@ -46,7 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
         log.info("Updating notification with id: {}", id);
         Notification existingNotification = notificationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + id));
-        
+
         Notification updatedNotification = notificationMapper.toEntity(notificationDTO);
         updatedNotification.setId(existingNotification.getId());
         updatedNotification = notificationRepository.save(updatedNotification);
@@ -61,6 +61,15 @@ public class NotificationServiceImpl implements NotificationService {
             throw new ResourceNotFoundException("Notification not found with id: " + id);
         }
         notificationRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void deleteReadNotifications(String userId) {
+        log.info("Deleting read notifications for user: {}", userId);
+        List<Notification> readNotifications = notificationRepository
+                .findByUserIdAndReadTrueAndDeletedFalse(userId);
+        notificationRepository.deleteAll(readNotifications);
     }
 
     @Override
@@ -94,7 +103,7 @@ public class NotificationServiceImpl implements NotificationService {
         log.info("Marking notification as read: {}", id);
         Notification notification = notificationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + id));
-        
+
         notification.setRead(true);
         notification = notificationRepository.save(notification);
         return notificationMapper.toDTO(notification);
@@ -104,7 +113,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public NotificationDTO markAllAsRead(String userId) {
         log.info("Marking all notifications as read for user: {}", userId);
-        List<Notification> notifications = notificationRepository.findByUserIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(userId);
+        List<Notification> notifications = notificationRepository
+                .findByUserIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(userId);
         notifications.forEach(notification -> notification.setRead(true));
         notifications = notificationRepository.saveAll(notifications);
         return notifications.isEmpty() ? null : notificationMapper.toDTO(notifications.get(0));
@@ -115,7 +125,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotification(NotificationDTO notificationDTO) {
         log.info("Sending notification: {}", notificationDTO.getId());
         Notification notification = notificationMapper.toEntity(notificationDTO);
-        
+
         try {
             switch (notification.getType()) {
                 case "EMAIL":
@@ -128,12 +138,11 @@ public class NotificationServiceImpl implements NotificationService {
                     sendPushNotification(notification);
                     break;
                 case "IN_APP":
-                    // In-app notifications are handled by the frontend
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported notification type: " + notification.getType());
             }
-            
+
             notification.setStatus("SENT");
             notification.setSentAt(LocalDateTime.now());
         } catch (Exception e) {
@@ -141,12 +150,12 @@ public class NotificationServiceImpl implements NotificationService {
             notification.setStatus("FAILED");
             notification.setErrorMessage(e.getMessage());
         }
-        
+
         notificationRepository.save(notification);
     }
 
     @Override
-    @Scheduled(fixedRate = 60000) // Run every minute
+    @Scheduled(fixedRate = 60000)
     @Transactional
     public void processPendingNotifications() {
         log.info("Processing pending notifications");
@@ -155,7 +164,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    @Scheduled(fixedRate = 300000) // Run every 5 minutes
+    @Scheduled(fixedRate = 300000)
     @Transactional
     public void retryFailedNotifications() {
         log.info("Retrying failed notifications");
@@ -166,23 +175,19 @@ public class NotificationServiceImpl implements NotificationService {
     private void sendEmail(Notification notification) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        
+
         helper.setTo(notification.getRecipient());
         helper.setSubject(notification.getTitle());
         helper.setText(notification.getContent(), true);
-        
+
         mailSender.send(message);
     }
 
     private void sendSMS(Notification notification) {
-        // TODO: Implement SMS sending logic
-        // This would typically involve calling an SMS service provider's API
         log.info("Sending SMS to: {}", notification.getRecipient());
     }
 
     private void sendPushNotification(Notification notification) {
-        // TODO: Implement push notification logic
-        // This would typically involve calling a push notification service provider's API
         log.info("Sending push notification to: {}", notification.getRecipient());
     }
-} 
+}

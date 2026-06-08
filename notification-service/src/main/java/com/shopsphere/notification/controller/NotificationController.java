@@ -30,7 +30,8 @@ public class NotificationController {
 
     @PostMapping
     @Operation(summary = "Create a new notification")
-    public ResponseEntity<ApiResponse<NotificationDTO>> createNotification(@Valid @RequestBody NotificationDTO notificationDTO) {
+    public ResponseEntity<ApiResponse<NotificationDTO>> createNotification(
+            @Valid @RequestBody NotificationDTO notificationDTO) {
         return ResponseEntity.ok(ApiResponse.success(notificationService.createNotification(notificationDTO)));
     }
 
@@ -66,7 +67,8 @@ public class NotificationController {
 
     @GetMapping("/user/{userId}/unread")
     @Operation(summary = "Get unread notifications for a user")
-    public ResponseEntity<ApiResponse<List<NotificationDTO>>> getUnreadNotificationsByUserId(@PathVariable String userId) {
+    public ResponseEntity<ApiResponse<List<NotificationDTO>>> getUnreadNotificationsByUserId(
+            @PathVariable String userId) {
         return ResponseEntity.ok(ApiResponse.success(notificationService.getUnreadNotificationsByUserId(userId)));
     }
 
@@ -81,4 +83,11 @@ public class NotificationController {
     public ResponseEntity<ApiResponse<NotificationDTO>> markAllAsRead(@PathVariable String userId) {
         return ResponseEntity.ok(ApiResponse.success(notificationService.markAllAsRead(userId)));
     }
-} 
+
+    @DeleteMapping("/user/{userId}/read")
+    @Operation(summary = "Delete all read notifications for a user")
+    public ResponseEntity<ApiResponse<Void>> deleteReadNotifications(@PathVariable String userId) {
+        notificationService.deleteReadNotifications(userId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+}

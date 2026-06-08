@@ -127,7 +127,7 @@ export default function ReviewForm({ productId, userId, userNickname, onSuccess 
       </div>
 
       <div className="mt-6">
-        <Button type="submit" disabled={isLoading || rating === 0 || !title || !content}>
+        <Button type="submit" disabled={isLoading || rating === 0 || !title || !content}className="bg-pink-500 hover:bg-pink-600">
           {isLoading ? 'Enviando...' : 'Enviar reseña'}
         </Button>
       </div>

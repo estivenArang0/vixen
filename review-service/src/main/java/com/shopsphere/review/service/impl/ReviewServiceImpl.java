@@ -31,8 +31,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDTO createReview(ReviewDTO reviewDTO) {
         log.info("Creating new review for product: {}", reviewDTO.getProductId());
         Review review = reviewMapper.toEntity(reviewDTO);
-        review.setStatus("APPROVED");
-        review.setApprovedAt(LocalDateTime.now());
+        review.setStatus("PENDING");
         review = reviewRepository.save(review);
         return reviewMapper.toDTO(review);
     }
@@ -43,7 +42,7 @@ public class ReviewServiceImpl implements ReviewService {
         log.info("Updating review with id: {}", id);
         Review existingReview = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
-        
+
         Review updatedReview = reviewMapper.toEntity(reviewDTO);
         updatedReview.setId(existingReview.getId());
         updatedReview = reviewRepository.save(updatedReview);
@@ -70,7 +69,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Page<ReviewDTO> getReviewsByProductId(String productId, Pageable pageable) {
         log.info("Getting reviews for product: {}", productId);
-        return reviewRepository.findByProductIdAndStatusAndDeletedFalseOrderByCreatedAtDesc(productId, "APPROVED", pageable)
+        return reviewRepository
+                .findByProductIdAndStatusAndDeletedFalseOrderByCreatedAtDesc(productId, "APPROVED", pageable)
                 .map(reviewMapper::toDTO);
     }
 
@@ -84,7 +84,9 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Page<ReviewDTO> getVerifiedReviewsByProductId(String productId, Pageable pageable) {
         log.info("Getting verified reviews for product: {}", productId);
-        return reviewRepository.findByProductIdAndVerifiedPurchaseAndStatusAndDeletedFalseOrderByCreatedAtDesc(productId, true, "APPROVED", pageable)
+        return reviewRepository
+                .findByProductIdAndVerifiedPurchaseAndStatusAndDeletedFalseOrderByCreatedAtDesc(productId, true,
+                        "APPROVED", pageable)
                 .map(reviewMapper::toDTO);
     }
 
@@ -101,7 +103,7 @@ public class ReviewServiceImpl implements ReviewService {
         log.info("Approving review: {}", id);
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
-        
+
         review.setStatus("APPROVED");
         review.setModeratorNotes(moderatorNotes);
         review.setApprovedAt(LocalDateTime.now());
@@ -115,7 +117,7 @@ public class ReviewServiceImpl implements ReviewService {
         log.info("Rejecting review: {}", id);
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
-        
+
         review.setStatus("REJECTED");
         review.setRejectionReason(rejectionReason);
         review.setRejectedAt(LocalDateTime.now());
@@ -129,7 +131,7 @@ public class ReviewServiceImpl implements ReviewService {
         log.info("Marking review as helpful: {}", id);
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
-        
+
         review.setHelpful(true);
         review.setHelpfulCount(review.getHelpfulCount() + 1);
         review = reviewRepository.save(review);
@@ -142,7 +144,7 @@ public class ReviewServiceImpl implements ReviewService {
         log.info("Marking review as not helpful: {}", id);
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
-        
+
         review.setHelpful(false);
         review.setHelpfulCount(Math.max(0, review.getHelpfulCount() - 1));
         review = reviewRepository.save(review);
@@ -155,7 +157,7 @@ public class ReviewServiceImpl implements ReviewService {
         log.info("Liking review: {}", id);
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
-        
+
         review.setLikes(review.getLikes() + 1);
         review = reviewRepository.save(review);
         return reviewMapper.toDTO(review);
@@ -167,7 +169,7 @@ public class ReviewServiceImpl implements ReviewService {
         log.info("Disliking review: {}", id);
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
-        
+
         review.setDislikes(review.getDislikes() + 1);
         review = reviewRepository.save(review);
         return reviewMapper.toDTO(review);
@@ -179,7 +181,7 @@ public class ReviewServiceImpl implements ReviewService {
         log.info("Featuring review: {}", id);
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
-        
+
         review.setFeatured(true);
         review = reviewRepository.save(review);
         return reviewMapper.toDTO(review);
@@ -191,7 +193,7 @@ public class ReviewServiceImpl implements ReviewService {
         log.info("Unfeaturing review: {}", id);
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
-        
+
         review.setFeatured(false);
         review = reviewRepository.save(review);
         return reviewMapper.toDTO(review);
@@ -200,7 +202,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<ReviewDTO> getFeaturedReviewsByProductId(String productId) {
         log.info("Getting featured reviews for product: {}", productId);
-        return reviewRepository.findByProductIdAndFeaturedAndStatusAndDeletedFalseOrderByCreatedAtDesc(productId, true, "APPROVED")
+        return reviewRepository
+                .findByProductIdAndFeaturedAndStatusAndDeletedFalseOrderByCreatedAtDesc(productId, true, "APPROVED")
                 .stream()
                 .map(reviewMapper::toDTO)
                 .toList();
@@ -235,8 +238,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public int getVerifiedReviewCount(String productId) {
         log.info("Getting verified review count for product: {}", productId);
-        return reviewRepository.findByProductIdAndVerifiedPurchaseAndStatusAndDeletedFalseOrderByCreatedAtDesc(productId, true, "APPROVED", Pageable.unpaged())
+        return reviewRepository
+                .findByProductIdAndVerifiedPurchaseAndStatusAndDeletedFalseOrderByCreatedAtDesc(productId, true,
+                        "APPROVED", Pageable.unpaged())
                 .getContent()
                 .size();
     }
-} 
+}

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useRef, useCallback } from 'react';
-import { Package, Minus, Plus, ShoppingCart, Check, X } from 'lucide-react';
+import { Package, Minus, Plus, ShoppingCart, Check, X, ChevronLeft } from 'lucide-react';
 import { useGetProductByIdQuery } from '../../features/products/productsApi';
 import { useAddToCartMutation } from '../../features/cart/cartApi';
 import { useGetReviewsByProductIdQuery, useGetAverageRatingQuery } from '../../features/reviews/reviewsApi';
@@ -13,6 +13,7 @@ import Badge from '../../components/ui/Badge';
 import ReviewCard from './components/ReviewCard';
 import ReviewForm from './components/ReviewForm';
 import Pagination from '../../components/ui/Pagination';
+
 
 const ZOOM_FACTOR = 3;
 const LENS_SIZE = 150;
@@ -45,7 +46,7 @@ export default function ProductDetailPage() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const clampedX = Math.max(LENS_SIZE / 2, Math.min(rect.width  - LENS_SIZE / 2, x));
+    const clampedX = Math.max(LENS_SIZE / 2, Math.min(rect.width - LENS_SIZE / 2, x));
     const clampedY = Math.max(LENS_SIZE / 2, Math.min(rect.height - LENS_SIZE / 2, y));
 
     // background-position: move the zoomed image so the hovered spot is centered in the lens
@@ -95,6 +96,13 @@ export default function ProductDetailPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Botón volver */}
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-6 flex items-center gap-1 text-sm text-pink-500 hover:text-gray-900 transition-colors"
+      >
+        <ChevronLeft className="h-4 w-4" /> Volver
+      </button>
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
 
         {/* Image */}
@@ -123,8 +131,8 @@ export default function ProductDetailPage() {
                     style={{
                       position: 'absolute',
                       left: lens.x - LENS_SIZE / 2,
-                      top:  lens.y - LENS_SIZE / 2,
-                      width:  LENS_SIZE,
+                      top: lens.y - LENS_SIZE / 2,
+                      width: LENS_SIZE,
                       height: LENS_SIZE,
                       borderRadius: '50%',
                       border: '2px solid rgba(255,255,255,0.9)',
@@ -202,11 +210,11 @@ export default function ProductDetailPage() {
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
-              <Button onClick={handleAddToCart} disabled={isAdding} size="lg" className="flex-1">
+              <Button onClick={handleAddToCart} disabled={isAdding} size="lg" className="flex-1 bg-pink-400 hover:bg-pink-600">
                 {added ? (
-                  <><Check className="h-5 w-5 mr-2" /> Added!</>
+                  <><Check className="h-5 w-5 mr-2" /> Agregado!</>
                 ) : (
-                  <><ShoppingCart className="h-5 w-5 mr-2" /> Add to Cart</>
+                  <><ShoppingCart className="h-5 w-5 mr-2" /> Agregar al Carrito</>
                 )}
               </Button>
             </div>
@@ -214,7 +222,7 @@ export default function ProductDetailPage() {
 
           {product.category && (
             <div className="mt-6 text-sm text-gray-500">
-              Category: <span className="text-gray-700">{product.category}</span>
+              Categoría: <span className="text-gray-700">{product.category}</span>
             </div>
           )}
           {product.sku && (
@@ -233,7 +241,7 @@ export default function ProductDetailPage() {
 
           {product.specifications?.length > 0 && (
             <div className="mt-8">
-              <h3 className="font-semibold text-gray-900 mb-3">Specifications</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">Especificaciones</h3>
               <ul className="space-y-1 text-sm text-gray-600">
                 {product.specifications.map((spec, i) => (
                   <li key={i} className="flex items-start gap-2">
@@ -270,7 +278,7 @@ export default function ProductDetailPage() {
 
       {/* Reviews */}
       <section className="mt-16 border-t border-gray-200 pt-12">
-        <h2 className="text-xl font-bold text-gray-900 mb-6">Customer Reviews</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-6">Comentarios de Clientes</h2>
 
         {isAuthenticated && (
           <div className="mb-8">
@@ -297,7 +305,8 @@ export default function ProductDetailPage() {
             />
           </>
         ) : (
-          <p className="text-gray-500">No reviews yet. Be the first to review this product!</p>
+          <p className="text-gray-500">
+            Aún no hay reseñas. ¡Sé el primero en reseñar este producto!</p>
         )}
       </section>
     </div>

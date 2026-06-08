@@ -41,7 +41,7 @@ export default function OrdersPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">My Orders</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-8">Mis Ordenes</h1>
       <div className="space-y-4">
         {orders.map((order) => (
           <Link key={order.id} to={`/account/orders/${order.id}`} className="block rounded-xl border border-gray-200 bg-white p-5 hover:shadow-sm transition-shadow">

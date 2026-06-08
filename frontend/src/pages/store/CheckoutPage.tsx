@@ -103,8 +103,8 @@ export default function CheckoutPage() {
         await createNotification({
           userId: user!.userId,
           type: 'ORDER_CONFIRMATION',
-          title: 'Order Placed Successfully',
-          content: `Your order #${order.orderNumber || order.id} for ${formatCurrency(order.total)} has been placed and is being processed.`,
+          title: 'Pedido Realizado con Éxito',
+          content: `Tu pedido #${order.orderNumber || order.id} por valor de ${formatCurrency(order.total)} ha sido recibido y está siendo procesado.`,
           priority: 'HIGH',
           category: 'ORDER',
           source: 'order-service',
@@ -118,7 +118,7 @@ export default function CheckoutPage() {
 
       navigate(`/orders/${order.id}/confirmation`);
     } catch {
-      setError('Failed to place order. Please try again.');
+      setError('Error al procesar el pedido. Por favor, inténtalo de nuevo.');
     } finally {
       setSubmitting(false);
     }
@@ -132,11 +132,11 @@ export default function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Checkout</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-8">Pago / Checkout</h1>
 
       {/* Steps indicator */}
       <div className="flex items-center gap-2 mb-8">
-        {['Shipping', 'Payment', 'Review'].map((label, i) => (
+        {['Envío', 'Pago', 'Revisión'].map((label, i) => (
           <div key={label} className="flex items-center gap-2">
             <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${i + 1 <= step ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
               {i + 1}
@@ -151,57 +151,57 @@ export default function CheckoutPage() {
 
       {step === 1 && (
         <div className="rounded-xl border border-gray-200 bg-white p-6">
-          <h2 className="text-lg font-semibold mb-4">Shipping Address</h2>
+          <h2 className="text-lg font-semibold mb-4">Dirección de Envío</h2>
           <div className="space-y-4">
-            <Input label="Address" value={shipping.address} onChange={setAddr(setShipping, 'address')} required />
+            <Input label="Dirección" value={shipping.address} onChange={setAddr(setShipping, 'address')} required />
             <div className="grid grid-cols-2 gap-4">
-              <Input label="City" value={shipping.city} onChange={setAddr(setShipping, 'city')} required />
-              <Input label="State" value={shipping.state} onChange={setAddr(setShipping, 'state')} required />
+              <Input label="Ciudad" value={shipping.city} onChange={setAddr(setShipping, 'city')} required />
+              <Input label="Estado / Provincia / Departamento" value={shipping.state} onChange={setAddr(setShipping, 'state')} required />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <Input label="Country" value={shipping.country} onChange={setAddr(setShipping, 'country')} required />
-              <Input label="Postal Code" value={shipping.postalCode} onChange={setAddr(setShipping, 'postalCode')} required />
+              <Input label="País" value={shipping.country} onChange={setAddr(setShipping, 'country')} required />
+              <Input label="Código Postal" value={shipping.postalCode} onChange={setAddr(setShipping, 'postalCode')} required />
             </div>
           </div>
           <div className="mt-6 flex justify-end">
-            <Button onClick={() => setStep(2)} disabled={!isShippingValid}>Continue to Payment</Button>
+            <Button onClick={() => setStep(2)} disabled={!isShippingValid}>Continuar al Pago</Button>
           </div>
         </div>
       )}
 
       {step === 2 && (
         <div className="rounded-xl border border-gray-200 bg-white p-6">
-          <h2 className="text-lg font-semibold mb-4">Payment & Billing</h2>
+          <h2 className="text-lg font-semibold mb-4">Pago y Facturación</h2>
           <div className="mb-4 rounded-lg bg-gray-50 p-4 text-sm text-gray-600">
-            Payment Method: Credit Card (simulated)
+            Método de Pago: Tarjeta de Crédito (simulado)
           </div>
           <label className="flex items-center gap-2 mb-4">
             <input type="checkbox" checked={sameAsShipping} onChange={(e) => setSameAsShipping(e.target.checked)} className="rounded border-gray-300" />
-            <span className="text-sm text-gray-700">Billing address same as shipping</span>
+            <span className="text-sm text-gray-700">La dirección de facturación es la misma que la de envío</span>
           </label>
           {!sameAsShipping && (
             <div className="space-y-4">
-              <Input label="Address" value={billing.address} onChange={setAddr(setBilling, 'address')} required />
+              <Input label="Dirección" value={billing.address} onChange={setAddr(setBilling, 'address')} required />
               <div className="grid grid-cols-2 gap-4">
-                <Input label="City" value={billing.city} onChange={setAddr(setBilling, 'city')} required />
-                <Input label="State" value={billing.state} onChange={setAddr(setBilling, 'state')} required />
+                <Input label="Ciudad" value={billing.city} onChange={setAddr(setBilling, 'city')} required />
+                <Input label="Estado / Provincia" value={billing.state} onChange={setAddr(setBilling, 'state')} required />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <Input label="Country" value={billing.country} onChange={setAddr(setBilling, 'country')} required />
-                <Input label="Postal Code" value={billing.postalCode} onChange={setAddr(setBilling, 'postalCode')} required />
+                <Input label="País" value={billing.country} onChange={setAddr(setBilling, 'country')} required />
+                <Input label="Código Postal" value={billing.postalCode} onChange={setAddr(setBilling, 'postalCode')} required />
               </div>
             </div>
           )}
           <div className="mt-6 flex justify-between">
-            <Button variant="ghost" onClick={() => setStep(1)}>Back</Button>
-            <Button onClick={() => setStep(3)} disabled={!isBillingValid}>Review Order</Button>
+            <Button variant="ghost" onClick={() => setStep(1)}>Atrás</Button>
+            <Button onClick={() => setStep(3)} disabled={!isBillingValid}>Revisar Pedido</Button>
           </div>
         </div>
       )}
 
       {step === 3 && (
         <div className="rounded-xl border border-gray-200 bg-white p-6">
-          <h2 className="text-lg font-semibold mb-4">Order Review</h2>
+          <h2 className="text-lg font-semibold mb-4">Revisión del Pedido</h2>
           <div className="space-y-3 mb-6">
             {cart.items.map((item) => (
               <div key={item.productId} className="flex justify-between text-sm">
@@ -211,18 +211,18 @@ export default function CheckoutPage() {
             ))}
             <hr />
             <div className="flex justify-between text-sm"><span className="text-gray-500">Subtotal</span><span>{formatCurrency(cart.subtotal)}</span></div>
-            <div className="flex justify-between text-sm"><span className="text-gray-500">Tax</span><span>{formatCurrency(cart.tax)}</span></div>
-            <div className="flex justify-between text-sm"><span className="text-gray-500">Shipping</span><span>{formatCurrency(cart.shippingCost)}</span></div>
+            <div className="flex justify-between text-sm"><span className="text-gray-500">Impuestos</span><span>{formatCurrency(cart.tax)}</span></div>
+            <div className="flex justify-between text-sm"><span className="text-gray-500">Envío</span><span>{formatCurrency(cart.shippingCost)}</span></div>
             <hr />
             <div className="flex justify-between font-semibold"><span>Total</span><span>{formatCurrency(cart.total)}</span></div>
           </div>
           <div className="text-sm text-gray-600 mb-6">
-            <p><strong>Ship to:</strong> {shipping.address}, {shipping.city}, {shipping.state} {shipping.postalCode}</p>
+            <p><strong>Enviar a:</strong> {shipping.address}, {shipping.city}, {shipping.state} {shipping.postalCode}</p>
           </div>
           <div className="flex justify-between">
-            <Button variant="ghost" onClick={() => setStep(2)}>Back</Button>
+            <Button variant="ghost" onClick={() => setStep(2)}>Atrás</Button>
             <Button onClick={handlePlaceOrder} disabled={submitting} size="lg">
-              {submitting ? 'Placing Order...' : 'Place Order'}
+              {submitting ? 'Procesando Pedido...' : 'Realizar Pedido'}
             </Button>
           </div>
         </div>

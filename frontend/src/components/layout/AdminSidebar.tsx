@@ -18,7 +18,7 @@ export default function AdminSidebar() {
     <aside className="hidden lg:flex w-64 flex-col border-r border-gray-200 bg-white">
       <div className="flex h-16 items-center border-b border-gray-200 px-6">
         <Link to="/admin" className="text-lg font-bold text-indigo-600">
-          Eden Admin
+          Auren Admin
         </Link>
       </div>
       <nav className="flex-1 space-y-1 p-4">

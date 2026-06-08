@@ -41,8 +41,8 @@ public class OrderServiceImpl implements OrderService {
         try {
             Map<String, Object> notification = new HashMap<>();
             notification.put("userId", savedOrder.getUserId());
-            notification.put("title", "Order Confirmed");
-            notification.put("content", "Your order " + savedOrder.getOrderNumber() + " has been placed successfully");
+            notification.put("title", "pedido confirmado");
+            notification.put("content", "Su pedido " + savedOrder.getOrderNumber() + " ha sido colocado exitosamente");
             notification.put("type", "IN_APP");
             notification.put("category", "ORDER");
             notificationServiceClient.createNotification(notification);
@@ -57,14 +57,14 @@ public class OrderServiceImpl implements OrderService {
     public OrderDTO getOrderById(String id) {
         return orderRepository.findById(id)
                 .map(orderMapper::toOrderDTO)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + id));
+                .orElseThrow(() -> new OrderNotFoundException("la orden no se encontró con el id: " + id));
     }
 
     @Override
     public OrderDTO getOrderByOrderNumber(String orderNumber) {
         return orderRepository.findByOrderNumber(orderNumber)
                 .map(orderMapper::toOrderDTO)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found with order number: " + orderNumber));
+                .orElseThrow(() -> new OrderNotFoundException("la orden no se encontró con el número: " + orderNumber));
     }
 
     @Override
@@ -81,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderDTO updateOrderStatus(String id, String orderStatus) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + id));
+                .orElseThrow(() -> new OrderNotFoundException("la orden no se encontró con el id: " + id));
         order.setOrderStatus(orderStatus);
         return orderMapper.toOrderDTO(orderRepository.save(order));
     }
@@ -90,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderDTO updateOrder(String id, OrderDTO orderDTO) {
         Order existingOrder = orderRepository.findById(id)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + id));
+                .orElseThrow(() -> new OrderNotFoundException("la orden no se encontró con el id: " + id));
         Order updatedOrder = orderMapper.toOrder(orderDTO);
         updatedOrder.setId(id);
         return orderMapper.toOrderDTO(orderRepository.save(updatedOrder));
@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void deleteOrder(String id) {
         if (!orderRepository.existsById(id)) {
-            throw new OrderNotFoundException("Order not found with id: " + id);
+            throw new OrderNotFoundException("la orden no se encontró con el id: " + id);
         }
         orderRepository.deleteById(id);
     }

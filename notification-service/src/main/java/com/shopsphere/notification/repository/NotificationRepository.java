@@ -12,6 +12,7 @@ import com.shopsphere.notification.model.Notification;
 public interface NotificationRepository extends BaseRepository<Notification> {
     List<Notification> findByUserIdAndDeletedFalseOrderByCreatedAtDesc(String userId);
     List<Notification> findByUserIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(String userId);
+    List<Notification> findByUserIdAndReadTrueAndDeletedFalse(String userId);
     Optional<Notification> findByIdAndUserId(String id, String userId);
     List<Notification> findByStatusAndDeletedFalse(String status);
     List<Notification> findByTypeAndStatusAndDeletedFalse(String type, String status);

@@ -31,6 +31,13 @@ const notificationsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Notifications'],
     }),
+    deleteReadNotifications: builder.mutation<void, string>({
+      query: (userId) => ({
+        url: `/notifications/user/${userId}/read`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Notifications'],
+    }),
   }),
 });
 
@@ -40,4 +47,5 @@ export const {
   useGetUnreadNotificationsQuery,
   useMarkAsReadMutation,
   useMarkAllAsReadMutation,
+  useDeleteReadNotificationsMutation,
 } = notificationsApi;
