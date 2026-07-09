@@ -30,10 +30,10 @@ export default function OrdersPage() {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8">
         <EmptyState
-          title="No orders yet"
-          description="Start shopping to see your orders here."
+          title="Aún no tienes pedidos"
+          description="Haz tu primera compra y empieza a construir tu historial con Vixen."
           icon={<Package className="h-16 w-16" />}
-          action={<Link to="/products"><Button>Browse Products</Button></Link>}
+          action={<Link to="/products"><Button>Explorar la colección</Button></Link>}
         />
       </div>
     );

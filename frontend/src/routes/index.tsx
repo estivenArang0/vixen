@@ -4,6 +4,7 @@ import AdminLayout from '../components/layout/AdminLayout';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
 import PublicOnlyRoute from './PublicOnlyRoute';
+import { LoadingScreen } from '../components/ui/LoadingScreen';
 
 import HomePage from '../pages/store/HomePage';
 import ProductListPage from '../pages/store/ProductListPage';
@@ -27,12 +28,14 @@ import AdminOrderDetailPage from '../pages/admin/AdminOrderDetailPage';
 import AdminUsersListPage from '../pages/admin/UsersListPage';
 import ReviewModerationPage from '../pages/admin/ReviewModerationPage';
 import ShipmentsPage from '../pages/admin/ShipmentsPage';
+import BannersPage from '../pages/admin/BannersPage';
 
 import NotFoundPage from '../pages/NotFoundPage';
 
 export const router = createBrowserRouter([
   {
     element: <StoreLayout />,
+    hydrateFallbackElement: <LoadingScreen />,
     children: [
       { path: '/', element: <HomePage /> },
       { path: '/products', element: <ProductListPage /> },
@@ -76,6 +79,7 @@ export const router = createBrowserRouter([
           { path: '/admin/users', element: <AdminUsersListPage /> },
           { path: '/admin/reviews', element: <ReviewModerationPage /> },
           { path: '/admin/shipments', element: <ShipmentsPage /> },
+          { path: '/admin/banners', element: <BannersPage /> },
         ],
       },
     ],

@@ -23,5 +23,5 @@ de:
 
 logging:
   level:
-    com.shopsphere.review: DEBUG
+    com.vixen.review: DEBUG
     org.springframework.data.mongodb: INFO

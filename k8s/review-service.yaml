@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: review-service
-  namespace: shopsphere
+  namespace: vixen
   labels:
     app: review-service
 spec:
@@ -17,15 +17,15 @@ spec:
     spec:
       containers:
         - name: review-service
-          image: shopsphere/review-service:latest
+          image: vixen/review-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8088
           envFrom:
             - configMapRef:
-                name: shopsphere-config
+                name: vixen-config
             - secretRef:
-                name: shopsphere-secrets
+                name: vixen-secrets
           resources:
             requests:
               memory: "256Mi"
@@ -50,7 +50,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: review-service
-  namespace: shopsphere
+  namespace: vixen
   labels:
     app: review-service
 spec:

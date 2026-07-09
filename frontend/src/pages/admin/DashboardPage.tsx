@@ -41,11 +41,12 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">Panel de control Vixen</h1>
+      <p className="mb-8 text-sm text-gray-500">Gestiona tu tienda con una experiencia de marca más completa.</p>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={ShoppingBag} label="Pedidos pendientes" value={pendingOrders?.length ?? 0} color="bg-yellow-500" to="/admin/orders" />
-        <StatCard icon={Package} label="Total productos" value={products?.length ?? 0} color="bg-indigo-500" to="/admin/products" />
-        <StatCard icon={Users} label="Total usuarios" value={users?.length ?? 0} color="bg-green-500" to="/admin/users" />
+        <StatCard icon={ShoppingBag} label="Pedidos por preparar" value={pendingOrders?.length ?? 0} color="bg-yellow-500" to="/admin/orders" />
+        <StatCard icon={Package} label="Productos disponibles" value={products?.length ?? 0} color="bg-indigo-500" to="/admin/products" />
+        <StatCard icon={Users} label="Usuarios registrados" value={users?.length ?? 0} color="bg-green-500" to="/admin/users" />
         <StatCard icon={Star} label="Reseñas pendientes" value={pendingReviews?.totalElements ?? 0} color="bg-purple-500" to="/admin/reviews" />
       </div>
     </div>

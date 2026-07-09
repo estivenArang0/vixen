@@ -9,9 +9,11 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Spinner from '../../components/ui/Spinner';
+import { useNotification } from '../../components/ui/NotificationProvider';
 
 export default function CheckoutPage() {
   const { user } = useAuth();
+  const { notify } = useNotification();
   const navigate = useNavigate();
   const { data: cart, isLoading: cartLoading } = useGetCartQuery(user!.userId);
   const [createOrder] = useCreateOrderMutation();
@@ -21,7 +23,6 @@ export default function CheckoutPage() {
 
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
 
   const [shipping, setShipping] = useState({
     address: '', city: '', state: '', country: '', postalCode: '',
@@ -42,7 +43,6 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     setSubmitting(true);
-    setError('');
     try {
       const shippingStr = `${shipping.address}, ${shipping.city}, ${shipping.state} ${shipping.postalCode}, ${shipping.country}`;
       const billingStr = `${effectiveBilling.address}, ${effectiveBilling.city}, ${effectiveBilling.state} ${effectiveBilling.postalCode}, ${effectiveBilling.country}`;
@@ -116,9 +116,18 @@ export default function CheckoutPage() {
         // Notification failed — continue
       }
 
+      notify({
+        title: 'Pedido enviado',
+        message: `Tu pedido #${order.orderNumber || order.id} se creó correctamente.`,
+        variant: 'success',
+      });
       navigate(`/orders/${order.id}/confirmation`);
     } catch {
-      setError('Error al procesar el pedido. Por favor, inténtalo de nuevo.');
+      notify({
+        title: 'Error en el pedido',
+        message: 'No pudimos completar el proceso. Revisa tus datos e inténtalo otra vez.',
+        variant: 'error',
+      });
     } finally {
       setSubmitting(false);
     }
@@ -132,7 +141,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Pago / Checkout</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-8">Checkout</h1>
 
       {/* Steps indicator */}
       <div className="flex items-center gap-2 mb-8">
@@ -146,8 +155,6 @@ export default function CheckoutPage() {
           </div>
         ))}
       </div>
-
-      {error && <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</div>}
 
       {step === 1 && (
         <div className="rounded-xl border border-gray-200 bg-white p-6">

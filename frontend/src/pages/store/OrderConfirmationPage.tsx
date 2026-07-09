@@ -14,14 +14,14 @@ export default function OrderConfirmationPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 text-center">
       <CheckCircle className="mx-auto h-16 w-16 text-green-500" />
-      <h1 className="mt-4 text-2xl font-bold text-gray-900">Orden Confirmada!</h1>
-      <p className="mt-2 text-gray-500">Gracias por tu compra.</p>
+      <h1 className="mt-4 text-2xl font-bold text-gray-900">¡Pedido confirmado!</h1>
+      <p className="mt-2 text-gray-500">Gracias por tu compra en Vixen.</p>
 
       {order && (
         <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 text-left">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-gray-500">Número de Orden</p>
+              <p className="text-gray-500">Número de pedido</p>
               <p className="font-medium">{order.orderNumber}</p>
             </div>
             <div>
@@ -29,11 +29,11 @@ export default function OrderConfirmationPage() {
               <p className="font-medium">{formatCurrency(order.total)}</p>
             </div>
             <div>
-              <p className="text-gray-500">Status</p>
+              <p className="text-gray-500">Estado</p>
               <p className="font-medium capitalize">{order.orderStatus?.toLowerCase()}</p>
             </div>
             <div>
-              <p className="text-gray-500">Items</p>
+              <p className="text-gray-500">Artículos</p>
               <p className="font-medium">{order.items.length} items</p>
             </div>
           </div>
@@ -42,10 +42,10 @@ export default function OrderConfirmationPage() {
 
       <div className="mt-8 flex justify-center gap-4">
         <Link to={`/account/orders/${id}`}>
-          <Button>Ver Detalles de la Orden</Button>
+          <Button>Ver detalles del pedido</Button>
         </Link>
         <Link to="/products">
-          <Button variant="secondary">Continua Comprando</Button>
+          <Button variant="secondary">Seguir comprando</Button>
         </Link>
       </div>
     </div>

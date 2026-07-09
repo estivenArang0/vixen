@@ -5,6 +5,7 @@ import { setCredentials } from '../../features/auth/authSlice';
 import { useAppDispatch } from '../../store/hooks';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import { useNotification } from '../../components/ui/NotificationProvider';
 
 type FormErrors = {
   firstName?: string;
@@ -68,6 +69,7 @@ const initialForm = {
 export default function RegisterPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { notify } = useNotification();
   const [register, { isLoading }] = useRegisterMutation();
 
   const [form, setForm] = useState(initialForm);
@@ -90,10 +92,21 @@ export default function RegisterPage() {
     try {
       const result = await register(form).unwrap();
       dispatch(setCredentials(result));
+      notify({
+        title: 'Cuenta creada',
+        message: 'Bienvenido a Vixen, tu cuenta se creó correctamente.',
+        variant: 'success',
+      });
       navigate('/', { replace: true });
     } catch (err: unknown) {
       const message = (err as { data?: { message?: string } })?.data?.message;
-      setServerError(message || 'Error al crear la cuenta. Intenta de nuevo.');
+      const errorMessage = message || 'Error al crear la cuenta. Intenta de nuevo.';
+      setServerError(errorMessage);
+      notify({
+        title: 'Error de registro',
+        message: errorMessage,
+        variant: 'error',
+      });
     }
   };
 
@@ -101,7 +114,7 @@ export default function RegisterPage() {
     <div className="flex min-h-[80vh] items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-          <h1 className="text-2xl font-bold text-gray-900 text-center mb-6">Crear Cuenta</h1>
+          <h1 className="text-2xl font-bold text-gray-900 text-center mb-6">Crear cuenta en Vixen</h1>
 
           {serverError && (
             <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">{serverError}</div>

@@ -23,9 +23,9 @@ export default function CartPage() {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <EmptyState
           title="Tu carrito está vacío"
-          description="Agrega productos a tu carrito para verlos aquí."
+          description="Añade tus favoritos y descubre la colección Vixen."
           icon={<ShoppingBag className="h-16 w-16" />}
-          action={<Link to="/products"><Button className="bg-pink-500 hover:bg-pink-600">Explorar Productos</Button></Link>}
+          action={<Link to="/products"><Button className="bg-pink-500 hover:bg-pink-600">Explorar la colección</Button></Link>}
         />
       </div>
     );
@@ -86,7 +86,7 @@ export default function CartPage() {
             </div>
           </div>
           <Link to="/checkout" className="mt-6 block">
-            <Button className="w-full" size="lg">Proceder al Pago</Button>
+            <Button className="w-full bg-pink-500 hover:bg-pink-600" size="lg">Proceder al Pago</Button>
           </Link>
         </div>
       </div>

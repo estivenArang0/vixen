@@ -1,4 +1,4 @@
-# ShopSphere E-commerce Microservice Platform - Makefile
+# Vixen E-commerce Microservice Platform - Makefile
 # Usage: make start-all   (starts everything for demo)
 #        make stop-all     (stops all running services)
 
@@ -94,7 +94,7 @@ start-frontend: | $(LOG_DIR)
 start-all: build start-infra start-services start-frontend
 	@echo ""
 	@echo "============================================"
-	@echo "  ShopSphere is ready for demo!"
+	@echo "  Vixen is ready for demo!"
 	@echo "  Frontend:    http://localhost:5173"
 	@echo "  API Gateway: http://localhost:8080"
 	@echo "============================================"
@@ -191,7 +191,7 @@ $(LOG_DIR):
 
 ## Show help
 help:
-	@echo "ShopSphere Makefile Commands:"
+	@echo "Vixen Makefile Commands:"
 	@echo ""
 	@echo "  make start-all        - Build, start infra + all services + frontend"
 	@echo "  make stop-all         - Stop everything"

@@ -33,7 +33,7 @@ export default function NotificationsPage() {
   if (!notifications || notifications.length === 0) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-8">
-        <EmptyState title="Sin notificaciones" description="¡Estás al día!" icon={<Bell className="h-16 w-16" />} />
+        <EmptyState title="Sin novedades" description="Todo está en orden por ahora. Te avisaremos cuando haya algo nuevo en Vixen." icon={<Bell className="h-16 w-16" />} />
       </div>
     );
   }

@@ -5,36 +5,17 @@ import ProductCard from './components/ProductCard';
 import Spinner from '../../components/ui/Spinner';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
+import { getSlides } from '../../features/banners/BannerSlide';
 
-const slides = [
-  {
-    title: 'Descubre tu estilo',
-    subtitle: 'Los mejores bodis y blusas con entrega rápida.',
-    bg: 'https://i.imgur.com/kUyyqId.png',
-    position: 'center 40%',
-    height: '250px',
-  },
-  {
-    title: 'Nueva colección',
-    subtitle: 'Conjuntos exclusivos para mujeres elegantes.',
-    bg: 'https://i.imgur.com/kUyyqId.png',
-    position: 'center 50%',
-    height: '250px',
-  },
-  {
-    title: 'Envío a todo Colombia',
-    subtitle: 'Recibe tu pedido en la puerta de tu casa.',
-    bg: 'https://i.imgur.com/WPNaUHY.jpeg',
-    position: 'center 75%',
-    height: '250px',
-  },
-];
+
 
 export default function HomePage() {
   const { data: products, isLoading } = useGetProductsQuery();
   const [emblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 3000 })]);
 
+
   const featured = products?.slice(0, 8) ?? [];
+  const slides = getSlides();
 
   return (
     <div>
@@ -44,7 +25,7 @@ export default function HomePage() {
           {slides.map((slide, i) => (
             <div
               key={i}
-              className="min-w-full text-white py-12 px-8"
+              className="min-w-full text-white py-16 px-8"
               style={{
                 backgroundImage: `url(${slide.bg})`,
                 backgroundSize: 'cover',
@@ -61,7 +42,7 @@ export default function HomePage() {
                   to="/products"
                   className="mt-4 inline-flex items-center gap-2 rounded-lg bg-pink-500 px-5 py-2 text-sm font-semibold text-white hover:bg-pink-400 transition-colors"
                 >
-                  Ver tienda <ArrowRight className="h-4 w-4" />
+                  Explorar la colección Vixen <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             </div>
@@ -101,7 +82,7 @@ export default function HomePage() {
       {/* Featured Products */}
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Productos destacados</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Lo más destacado de Vixen</h2>
           <Link to="/products" className="flex items-center gap-1 text-sm font-medium text-pink-500 hover:text-pink-400">
             Ver todos <ArrowRight className="h-4 w-4" />
           </Link>

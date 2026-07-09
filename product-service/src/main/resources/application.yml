@@ -8,17 +8,12 @@ spring:
     mongodb:
       host: ${MONGODB_HOST:localhost}
       port: 27017
-      database: shopsphere_products
-      username: root
-      password: root
-      authentication-database: admin
+      database: vixen_products
     redis:
       host: ${REDIS_HOST:localhost}
       port: 6379
     elasticsearch:
       uris: ${ELASTICSEARCH_URI:http://localhost:9200}
-      username: elastic
-      password: changeme
 
 springdoc:
   api-docs:

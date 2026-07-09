@@ -4,6 +4,8 @@ import ProductCard from './components/ProductCard';
 import Pagination from '../../components/ui/Pagination';
 import Spinner from '../../components/ui/Spinner';
 import EmptyState from '../../components/ui/EmptyState';
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
 
 const CATEGORIES = [
   { label: 'Todos', value: null },
@@ -13,9 +15,11 @@ const CATEGORIES = [
   { label: 'Conjuntos', value: 'Conjuntos' },
   { label: 'Leggins', value: 'Leggins' },
   { label: 'Corsets', value: 'Corsets' },
+  { label: 'Shorts', value: 'Shorts' },
 ];
 
 export default function ProductListPage() {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const pageSize = 12;
@@ -41,7 +45,14 @@ export default function ProductListPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Productos</h1>
+      {/* Botón volver */}
+  <button
+    onClick={() => navigate(-1)}
+    className="mb-6 flex items-center gap-1 text-sm text-pink-500 hover:text-gray-900 transition-colors"
+  >
+    <ChevronLeft className="h-4 w-4" /> Volver
+  </button>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Colección Vixen</h1>
 
       {/* Filtro de categorías */}
       <div className="flex flex-wrap gap-2 mb-8">
@@ -70,7 +81,7 @@ export default function ProductListPage() {
       ) : selectedCategory !== null ? (
         // Vista por categoría
         categoryProducts.length === 0 ? (
-          <EmptyState title="Sin productos" description="No hay productos en esta categoría." />
+          <EmptyState title="Sin productos" description="Pronto habrá novedades en esta categoría de la colección Vixen." />
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {categoryProducts.map((product) => (
@@ -81,7 +92,7 @@ export default function ProductListPage() {
       ) : (
         // Vista paginada - Todos
         !pagedData || pagedData.content.length === 0 ? (
-          <EmptyState title="No hay productos" description="Vuelve pronto para ver novedades." />
+          <EmptyState title="No hay productos" description="Vuelve pronto para descubrir nuevas colecciones de Vixen." />
         ) : (
           <>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

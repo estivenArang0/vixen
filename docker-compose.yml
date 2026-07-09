@@ -22,7 +22,7 @@ services:
       - user-service
       - product-service
     networks:
-      - shopsphere-network
+      - Vixen-network
 
   product-service:
     build:
@@ -40,7 +40,7 @@ services:
       - redis
       - elasticsearch
     networks:
-      - shopsphere-network
+      - Vixen-network
 
   order-service:
     build:
@@ -58,7 +58,7 @@ services:
       - mongodb
       - redis
     networks:
-      - shopsphere-network
+      - Vixen-network
 
   user-service:
     build:
@@ -75,7 +75,7 @@ services:
       - mongodb
       - redis
     networks:
-      - shopsphere-network
+      - Vixen-network
 
   cart-service:
     build:
@@ -91,7 +91,7 @@ services:
       - mongodb
       - redis
     networks:
-      - shopsphere-network
+      - Vixen-network
 
   payment-service:
     build:
@@ -108,7 +108,7 @@ services:
       - mongodb
       - redis
     networks:
-      - shopsphere-network
+      - Vixen-network
 
   shipping-service:
     build:
@@ -124,7 +124,7 @@ services:
       - mongodb
       - redis
     networks:
-      - shopsphere-network
+      - Vixen-network
 
   notification-service:
     build:
@@ -142,7 +142,7 @@ services:
       - mongodb
       - redis
     networks:
-      - shopsphere-network
+      - Vixen-network
 
   review-service:
     build:
@@ -158,7 +158,7 @@ services:
       - mongodb
       - redis
     networks:
-      - shopsphere-network
+      - Vixen-network
 
   mongodb:
     image: mongo:latest
@@ -170,7 +170,7 @@ services:
     volumes:
       - mongodb_data:/data/db
     networks:
-      - shopsphere-network
+      - Vixen-network
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
@@ -184,7 +184,7 @@ services:
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
-      - shopsphere-network
+      - Vixen-network
 
   redis:
     image: redis:latest
@@ -193,10 +193,10 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - shopsphere-network
+      - Vixen-network
 
 networks:
-  shopsphere-network:
+  Vixen-network:
     driver: bridge
 
 volumes:

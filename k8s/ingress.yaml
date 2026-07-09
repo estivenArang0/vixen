@@ -1,14 +1,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: shopsphere-ingress
-  namespace: shopsphere
+  name: vixen-ingress
+  namespace: vixen
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-    - host: shopsphere.local
+    - host: vixen.local
       http:
         paths:
           - path: /

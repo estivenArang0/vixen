@@ -1,14 +1,15 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingBag, Users, Star, Truck, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, Users, Star, Truck, ArrowLeft, Image } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const navItems = [
-  { to: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/admin/products', icon: Package, label: 'Products' },
-  { to: '/admin/orders', icon: ShoppingBag, label: 'Orders' },
-  { to: '/admin/users', icon: Users, label: 'Users' },
-  { to: '/admin/reviews', icon: Star, label: 'Reviews' },
-  { to: '/admin/shipments', icon: Truck, label: 'Shipments' },
+  { to: '/admin', icon: LayoutDashboard, label: 'Panel' },
+  { to: '/admin/products', icon: Package, label: 'Productos' },
+  { to: '/admin/orders', icon: ShoppingBag, label: 'Pedidos' },
+  { to: '/admin/users', icon: Users, label: 'Usuarios' },
+  { to: '/admin/reviews', icon: Star, label: 'Reseñas' },
+  { to: '/admin/shipments', icon: Truck, label: 'Envíos' },
+  { to: '/admin/banners', icon: Image, label: 'Banners' },
 ];
 
 export default function AdminSidebar() {
@@ -18,7 +19,7 @@ export default function AdminSidebar() {
     <aside className="hidden lg:flex w-64 flex-col border-r border-gray-200 bg-white">
       <div className="flex h-16 items-center border-b border-gray-200 px-6">
         <Link to="/admin" className="text-lg font-bold text-indigo-600">
-          Auren Admin
+          Vixen Admin
         </Link>
       </div>
       <nav className="flex-1 space-y-1 p-4">
@@ -43,7 +44,7 @@ export default function AdminSidebar() {
       </nav>
       <div className="border-t border-gray-200 p-4">
         <Link to="/" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700">
-          <ArrowLeft className="h-4 w-4" /> Back to Store
+          <ArrowLeft className="h-4 w-4" /> Volver a Vixen
         </Link>
       </div>
     </aside>

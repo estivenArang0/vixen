@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Package, Minus, Plus, ShoppingCart, Check, X, ChevronLeft } from 'lucide-react';
 import { useGetProductByIdQuery } from '../../features/products/productsApi';
 import { useAddToCartMutation } from '../../features/cart/cartApi';
@@ -13,7 +13,7 @@ import Badge from '../../components/ui/Badge';
 import ReviewCard from './components/ReviewCard';
 import ReviewForm from './components/ReviewForm';
 import Pagination from '../../components/ui/Pagination';
-
+import { parseImageCrop } from '../../utils/imageCrop';
 
 const ZOOM_FACTOR = 3;
 const LENS_SIZE = 150;
@@ -27,6 +27,9 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [reviewPage, setReviewPage] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedColorIndex, setSelectedColorIndex] = useState<number | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   const [lens, setLens] = useState<{ x: number; y: number; bgX: number; bgY: number } | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -37,6 +40,12 @@ export default function ProductDetailPage() {
     { skip: !id },
   );
   const { data: averageRating } = useGetAverageRatingQuery(id!, { skip: !id });
+
+  useEffect(() => {
+    if (product?.variants && product.variants.length > 0 && selectedColorIndex === null) {
+      setSelectedColorIndex(0);
+    }
+  }, [product, selectedColorIndex]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const container = containerRef.current;
@@ -49,7 +58,6 @@ export default function ProductDetailPage() {
     const clampedX = Math.max(LENS_SIZE / 2, Math.min(rect.width - LENS_SIZE / 2, x));
     const clampedY = Math.max(LENS_SIZE / 2, Math.min(rect.height - LENS_SIZE / 2, y));
 
-    // background-position: move the zoomed image so the hovered spot is centered in the lens
     const bgX = -(clampedX * ZOOM_FACTOR - LENS_SIZE / 2);
     const bgY = -(clampedY * ZOOM_FACTOR - LENS_SIZE / 2);
 
@@ -68,22 +76,46 @@ export default function ProductDetailPage() {
     return <div className="py-20 text-center text-gray-500">Product not found</div>;
   }
 
+  const hasVariants = !!product.variants && product.variants.length > 0;
+  const activeVariant = hasVariants && selectedColorIndex !== null ? product.variants[selectedColorIndex] : null;
+  const displayImages = activeVariant && activeVariant.images.length > 0 ? activeVariant.images : (product.images ?? []);
+  const displayPrice = activeVariant?.price ?? product.price;
+  const sizesForActiveColor = activeVariant?.sizes ?? {};
+  const stockForSelectedSize = selectedSize ? (sizesForActiveColor[selectedSize] ?? 0) : null;
+  const canAddToCart = hasVariants
+    ? selectedColorIndex !== null && !!selectedSize && (stockForSelectedSize ?? 0) > 0
+    : product.stockQuantity > 0;
+  const maxQuantity = hasVariants ? (stockForSelectedSize ?? 0) : product.stockQuantity;
+
+  const selectColor = (index: number) => {
+    setSelectedColorIndex(index);
+    setSelectedSize(null);
+    setSelectedIndex(0);
+    setQuantity(1);
+  };
+
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
+    if (hasVariants && (selectedColorIndex === null || !selectedSize)) {
+      return;
+    }
+    const cartLabel = activeVariant
+      ? `${product.name} (${activeVariant.color}, talla ${selectedSize})`
+      : product.name;
     try {
       await addToCart({
         userId: user!.userId,
         item: {
           productId: product.id,
-          productName: product.name,
+          productName: cartLabel,
           sku: product.sku,
           quantity,
-          unitPrice: product.price,
-          subtotal: product.price * quantity,
-          imageUrl: product.images?.[0] || null,
+          unitPrice: displayPrice,
+          subtotal: displayPrice * quantity,
+          imageUrl: displayImages[0] ? parseImageCrop(displayImages[0]).url : null,
         },
       }).unwrap();
       setAdded(true);
@@ -92,7 +124,10 @@ export default function ProductDetailPage() {
     }
   };
 
-  const imageUrl = product.images?.[0];
+  const images = displayImages;
+  const selectedRaw = images[selectedIndex] ?? '';
+  const crop = parseImageCrop(selectedRaw);
+  const imageUrl = crop.url;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -106,73 +141,101 @@ export default function ProductDetailPage() {
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
 
         {/* Image */}
-        <div
-          ref={containerRef}
-          className="aspect-square overflow-hidden rounded-xl bg-gray-100 flex items-center justify-center relative select-none"
-          style={{ cursor: lens ? 'none' : 'default' }}
-          onMouseMove={handleMouseMove}
-          onMouseEnter={() => imageUrl && setLens(l => l)}
-          onMouseLeave={() => setLens(null)}
-          onDoubleClick={() => imageUrl && setLightboxOpen(true)}
-        >
-          {imageUrl ? (
-            <>
-              <img
-                src={imageUrl}
-                alt={product.name}
-                className="h-full w-full object-cover"
-                draggable={false}
-              />
+        <div>
+          <div
+            ref={containerRef}
+            className="aspect-square overflow-hidden rounded-xl bg-gray-100 flex items-center justify-center relative select-none"
+            style={{ cursor: lens ? 'none' : 'default' }}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={() => imageUrl && setLens(l => l)}
+            onMouseLeave={() => setLens(null)}
+            onDoubleClick={() => imageUrl && setLightboxOpen(true)}
+          >
+            {imageUrl ? (
+              <>
+                <img
+                  src={imageUrl}
+                  alt={product.name}
+                  className="h-full w-full object-cover"
+                  draggable={false}
+                  style={{ objectPosition: `${crop.offsetX}% ${crop.offsetY}%`, transform: `scale(${crop.zoom / 100})` }}
+                />
 
-              {lens && (
-                <>
-                  {/* Lens circle — uses background-image to show the zoomed portion */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: lens.x - LENS_SIZE / 2,
-                      top: lens.y - LENS_SIZE / 2,
-                      width: LENS_SIZE,
-                      height: LENS_SIZE,
-                      borderRadius: '50%',
-                      border: '2px solid rgba(255,255,255,0.9)',
-                      boxShadow: '0 4px 20px rgba(0,0,0,0.35)',
-                      backgroundImage: `url(${imageUrl})`,
-                      backgroundRepeat: 'no-repeat',
-                      backgroundSize: `${containerRef.current!.getBoundingClientRect().width * ZOOM_FACTOR}px ${containerRef.current!.getBoundingClientRect().height * ZOOM_FACTOR}px`,
-                      backgroundPosition: `${lens.bgX}px ${lens.bgY}px`,
-                      pointerEvents: 'none',
-                      zIndex: 10,
-                    }}
-                  />
+                {lens && (
+                  <>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: lens.x - LENS_SIZE / 2,
+                        top: lens.y - LENS_SIZE / 2,
+                        width: LENS_SIZE,
+                        height: LENS_SIZE,
+                        borderRadius: '50%',
+                        border: '2px solid rgba(255,255,255,0.9)',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.35)',
+                        backgroundImage: `url(${imageUrl})`,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: `${containerRef.current!.getBoundingClientRect().width * ZOOM_FACTOR}px ${containerRef.current!.getBoundingClientRect().height * ZOOM_FACTOR}px`,
+                        backgroundPosition: `${lens.bgX}px ${lens.bgY}px`,
+                        pointerEvents: 'none',
+                        zIndex: 10,
+                      }}
+                    />
 
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: 12,
-                      right: 12,
-                      background: 'rgba(0,0,0,0.5)',
-                      color: 'white',
-                      fontSize: 11,
-                      padding: '3px 10px',
-                      borderRadius: 999,
-                      pointerEvents: 'none',
-                    }}
-                  >
-                    Doble clic para ampliar
-                  </div>
-                </>
-              )}
-            </>
-          ) : (
-            <Package className="h-24 w-24 text-gray-300" />
-          )}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: 12,
+                        right: 12,
+                        background: 'rgba(0,0,0,0.5)',
+                        color: 'white',
+                        fontSize: 11,
+                        padding: '3px 10px',
+                        borderRadius: 999,
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      Doble clic para ampliar
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <Package className="h-24 w-24 text-gray-300" />
+            )}
+          </div>
         </div>
 
         {/* Info */}
         <div>
           <p className="text-sm text-gray-500 uppercase tracking-wide">{product.brand}</p>
-          <h1 className="mt-1 text-3xl font-bold text-gray-900">{product.name}</h1>
+
+          <div className="mt-1 flex items-start justify-between gap-4">
+            <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+
+            {images.length > 1 && (
+              <div className="flex gap-2 flex-shrink-0">
+                {images.map((img, i) => {
+                  const thumbCrop = parseImageCrop(img);
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedIndex(i)}
+                      className={`h-16 w-16 rounded-lg overflow-hidden border-2 transition-colors flex-shrink-0 ${i === selectedIndex ? 'border-pink-500' : 'border-gray-200'
+                        }`}
+                    >
+                      <img
+                        src={thumbCrop.url}
+                        alt={`${product.name} ${i + 1}`}
+                        className="h-full w-full object-cover"
+                        style={{ objectPosition: `${thumbCrop.offsetX}% ${thumbCrop.offsetY}%`, transform: `scale(${thumbCrop.zoom / 100})` }}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
           <div className="mt-3 flex items-center gap-3">
             <StarRating rating={averageRating ?? 0} />
@@ -181,10 +244,78 @@ export default function ProductDetailPage() {
             </span>
           </div>
 
-          <p className="mt-4 text-3xl font-bold text-gray-900">{formatCurrency(product.price)}</p>
+          <p className="mt-4 text-3xl font-bold text-gray-900">{formatCurrency(displayPrice)}</p>
+
+          {hasVariants && (
+            <div className="mt-4">
+              <p className="text-sm font-medium text-gray-700 mb-2">Color</p>
+              <div className="flex flex-wrap gap-2">
+                {product.variants.map((v, i) => {
+                  const variantStock = Object.values(v.sizes || {}).reduce((s, n) => s + n, 0);
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => selectColor(i)}
+                      disabled={variantStock === 0}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                        selectedColorIndex === i
+                          ? 'bg-pink-500 border-pink-500 text-white'
+                          : variantStock === 0
+                            ? 'border-gray-200 text-gray-300 cursor-not-allowed line-through'
+                            : 'border-gray-300 text-gray-600 hover:border-pink-400'
+                      }`}
+                    >
+                      {v.color}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {hasVariants && activeVariant && (
+            <div className="mt-4">
+              <p className="text-sm font-medium text-gray-700 mb-2">Talla</p>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(sizesForActiveColor).map(([size, stock]) => (
+                  <button
+                    key={size}
+                    onClick={() => stock > 0 && (setSelectedSize(size), setQuantity(1))}
+                    disabled={stock === 0}
+                    className={`h-10 min-w-[2.75rem] px-3 rounded-lg border text-sm font-semibold transition-colors ${
+                      selectedSize === size
+                        ? 'bg-pink-500 border-pink-500 text-white'
+                        : stock === 0
+                          ? 'border-gray-200 text-gray-300 cursor-not-allowed line-through'
+                          : 'border-gray-300 text-gray-600 hover:border-pink-400'
+                    }`}
+                    title={stock === 0 ? 'Agotado' : `${stock} disponibles`}
+                  >
+                    {size}
+                  </button>
+                ))}
+                {Object.keys(sizesForActiveColor).length === 0 && (
+                  <span className="text-sm text-gray-400">Sin tallas cargadas para este color</span>
+                )}
+              </div>
+              {selectedSize && (
+                <p className="mt-2 text-xs text-gray-500">
+                  {stockForSelectedSize} disponibles en {activeVariant.color} / {selectedSize}
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="mt-3">
-            {product.stockQuantity > 0 ? (
+            {hasVariants ? (
+              canAddToCart ? (
+                <Badge variant="success">Disponible ({stockForSelectedSize})</Badge>
+              ) : selectedSize ? (
+                <Badge variant="danger">Agotado en esta talla</Badge>
+              ) : (
+                <Badge>Selecciona color y talla</Badge>
+              )
+            ) : product.stockQuantity > 0 ? (
               <Badge variant="success">In Stock ({product.stockQuantity})</Badge>
             ) : (
               <Badge variant="danger">Out of Stock</Badge>
@@ -193,7 +324,7 @@ export default function ProductDetailPage() {
 
           <p className="mt-6 text-gray-600 leading-relaxed">{product.description}</p>
 
-          {product.stockQuantity > 0 && (
+          {canAddToCart && (
             <div className="mt-8 flex items-center gap-4">
               <div className="flex items-center rounded-lg border border-gray-300">
                 <button
@@ -204,7 +335,7 @@ export default function ProductDetailPage() {
                 </button>
                 <span className="w-12 text-center text-sm font-medium">{quantity}</span>
                 <button
-                  onClick={() => setQuantity(Math.min(product.stockQuantity, quantity + 1))}
+                  onClick={() => setQuantity(Math.min(maxQuantity, quantity + 1))}
                   className="px-3 py-2 hover:bg-gray-50"
                 >
                   <Plus className="h-4 w-4" />

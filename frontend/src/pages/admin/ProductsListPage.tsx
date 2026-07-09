@@ -18,6 +18,7 @@ export default function ProductsListPage() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDir, setSortDir] = useState<SortDir>('asc');
+  const [stockFilter, setStockFilter] = useState<'all' | 'low' | 'out'>('all');
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -29,20 +30,25 @@ export default function ProductsListPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('¿Eliminar este producto?')) await deleteProduct(id);
+    if (confirm('¿Eliminar este producto del catálogo Vixen?')) await deleteProduct(id);
   };
 
   // Productos filtrados por categoría
   const filtered = useMemo(() => {
     let list = [...(products ?? [])];
     if (selectedCategory !== 'Todos') list = list.filter((p) => p.category === selectedCategory);
+
+    if (stockFilter === 'low') list = list.filter((p) => p.stockQuantity > 0 && p.stockQuantity <= 5);
+    if (stockFilter === 'out') list = list.filter((p) => p.stockQuantity === 0);
+
     if (sortField) {
       list.sort((a, b) => sortDir === 'asc' ? a[sortField] - b[sortField] : b[sortField] - a[sortField]);
     } else {
       list.sort((a, b) => a.category.localeCompare(b.category));
     }
     return list;
-  }, [products, selectedCategory, sortField, sortDir]);
+  }, [products, selectedCategory, sortField, sortDir, stockFilter]);
+
 
   // Métricas del conjunto filtrado
   const metrics = useMemo(() => {
@@ -66,9 +72,12 @@ export default function ProductsListPage() {
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Products</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Catálogo Vixen</h1>
+          <p className="text-sm text-gray-500">Administra productos y stock con la identidad de Vixen.</p>
+        </div>
         <Link to="/admin/products/new">
-          <Button><Plus className="h-4 w-4 mr-1" /> Add Product</Button>
+          <Button><Plus className="h-4 w-4 mr-1" /> Agregar producto</Button>
         </Link>
       </div>
 
@@ -78,11 +87,10 @@ export default function ProductsListPage() {
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
-              selectedCategory === cat
-                ? 'bg-indigo-600 text-white border-indigo-600'
-                : 'bg-white text-gray-600 border-gray-300 hover:border-indigo-400'
-            }`}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${selectedCategory === cat
+              ? 'bg-indigo-600 text-white border-indigo-600'
+              : 'bg-white text-gray-600 border-gray-300 hover:border-indigo-400'
+              }`}
           >
             {cat}
           </button>
@@ -109,7 +117,11 @@ export default function ProductsListPage() {
             <p className="text-sm font-bold text-gray-900">{metrics.totalUnits} uds</p>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
+        <div
+          onClick={() => setStockFilter(stockFilter === 'low' ? 'all' : 'low')}
+          className={`bg-white rounded-xl border p-4 flex items-center gap-3 cursor-pointer transition-colors ${stockFilter === 'low' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200 hover:border-yellow-400'
+            }`}
+        >
           <div className="bg-yellow-100 p-2 rounded-lg">
             <AlertTriangle className="h-5 w-5 text-yellow-600" />
           </div>
@@ -118,7 +130,11 @@ export default function ProductsListPage() {
             <p className="text-sm font-bold text-yellow-600">{metrics.stockBajo.length} productos</p>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
+        <div
+          onClick={() => setStockFilter(stockFilter === 'out' ? 'all' : 'out')}
+          className={`bg-white rounded-xl border p-4 flex items-center gap-3 cursor-pointer transition-colors ${stockFilter === 'out' ? 'border-red-400 bg-red-50' : 'border-gray-200 hover:border-red-400'
+            }`}
+        >
           <div className="bg-red-100 p-2 rounded-lg">
             <XCircle className="h-5 w-5 text-red-600" />
           </div>
@@ -128,7 +144,6 @@ export default function ProductsListPage() {
           </div>
         </div>
       </div>
-
       {/* Alertas stock bajo */}
       {metrics.stockBajo.length > 0 && (
         <div className="mb-4 bg-yellow-50 border border-yellow-200 rounded-xl p-4">

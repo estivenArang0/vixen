@@ -8,10 +8,7 @@ spring:
     mongodb:
       host: ${MONGODB_HOST:localhost}
       port: 27017
-      database: shopsphere_payments
-      username: root
-      password: root
-      authentication-database: admin
+      database: vixen_payments
     redis:
       host: ${REDIS_HOST:localhost}
       port: 6379
@@ -21,5 +18,5 @@ stripe:
 
 logging:
   level:
-    com.shopsphere: DEBUG
+    com.vixen: DEBUG
     org.springframework: INFO

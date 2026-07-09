@@ -8,6 +8,10 @@ spring:
 jwt:
   secret: ${JWT_SECRET:mySecretKeyForJWTTokenGenerationThatIsLongEnoughForHS256Algorithm2024}
 
+app:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
+
 services:
   user:
     url: ${USER_SERVICE_URL:http://localhost:8083}
@@ -37,5 +41,5 @@ management:
 
 logging:
   level:
-    com.shopsphere.gateway: DEBUG
+    com.vixen.gateway: DEBUG
     org.springframework.cloud.gateway: DEBUG

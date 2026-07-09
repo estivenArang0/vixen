@@ -4,6 +4,7 @@ import type { ProductDTO } from '../../../features/products/productsTypes';
 import { useGetAverageRatingQuery, useGetReviewCountQuery } from '../../../features/reviews/reviewsApi';
 import { formatCurrency } from '../../../utils/formatCurrency';
 import StarRating from '../../../components/ui/StarRating';
+import { parseImageCrop } from '../../../utils/imageCrop';
 
 interface ProductCardProps {
   product: ProductDTO;
@@ -18,14 +19,22 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white transition-shadow hover:shadow-md">
         <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
           {product.images?.[0] ? (
-            <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover group-hover:scale-105 transition-transform" />
+            <img
+              src={parseImageCrop(product.images[0]).url}
+              alt={product.name}
+              className="h-full w-full object-cover group-hover:scale-105 transition-transform"
+              style={{
+                objectPosition: `${parseImageCrop(product.images[0]).offsetX}% ${parseImageCrop(product.images[0]).offsetY}%`,
+                transform: `scale(${parseImageCrop(product.images[0]).zoom / 100})`,
+              }}
+            />
           ) : (
-            <Package className="h-16 w-16 text-gray-300" />
+            <Package className="h-16 w-16 text-gray-400" />
           )}
         </div>
         <div className="p-4">
           <p className="text-xs text-gray-500 uppercase tracking-wide">{product.brand}</p>
-          <h3 className="mt-1 font-medium text-gray-900 line-clamp-1 group-hover:text-indigo-600">
+          <h3 className="mt-1 font-medium text-gray-900 line-clamp-1 group-hover:text-pink-600">
             {product.name}
           </h3>
           <div className="mt-1 flex items-center gap-2">

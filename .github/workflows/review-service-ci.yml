@@ -90,4 +90,4 @@ jobs:
         cd review-service/k8s
         kubectl apply -f deployment.yaml
         kubectl apply -f service.yaml
-        kubectl rollout status deployment/review-service -n shopsphere 
+        kubectl rollout status deployment/review-service -n vixen 
