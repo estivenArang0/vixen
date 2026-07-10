@@ -50,8 +50,6 @@ function validate(form: typeof initialForm): FormErrors {
     errors.password = 'Debe incluir al menos una minúscula.';
   } else if (!/[0-9]/.test(form.password)) {
     errors.password = 'Debe incluir al menos un número.';
-  } else if (!/[^A-Za-z0-9]/.test(form.password)) {
-    errors.password = 'Debe incluir al menos un carácter especial (!@#$...).';
   }
 
   return errors;
@@ -78,7 +76,7 @@ export default function RegisterPage() {
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [field]: e.target.value });
-    setErrors((prev) => ({ ...prev, [field]: undefined })); // limpiar error al escribir
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,7 +97,8 @@ export default function RegisterPage() {
       });
       navigate('/', { replace: true });
     } catch (err: unknown) {
-      const message = (err as { data?: { message?: string } })?.data?.message;
+      const errorObj = err as { status?: number; data?: { message?: string; [key: string]: unknown } };
+      const message = errorObj?.data?.message || (errorObj as { message?: string })?.message;
       const errorMessage = message || 'Error al crear la cuenta. Intenta de nuevo.';
       setServerError(errorMessage);
       notify({
@@ -149,10 +148,11 @@ export default function RegisterPage() {
 
             <div>
               <Input label="Contraseña" type="password" value={form.password} onChange={set('password')} />
-              {errors.password
-                ? <p className="mt-1 text-xs text-red-500">{errors.password}</p>
-                : <p className="mt-1 text-xs text-gray-500">Mín. 8 caracteres, letras y numeros.</p>
-              }
+              {errors.password ? (
+                <p className="mt-1 text-xs text-red-500">{errors.password}</p>
+              ) : (
+                <p className="mt-1 text-xs text-gray-500">Mín. 8 caracteres, con mayúscula, minúscula y número.</p>
+              )}
             </div>
 
             <Button type="submit" disabled={isLoading} className="w-full">

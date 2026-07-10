@@ -15,5 +15,4 @@ spring:
 
 logging:
   level:
-    com.vixen: DEBUG
-    org.springframework: INFO
+    com.vixen: INFO

@@ -19,5 +19,6 @@ jwt:
 
 logging:
   level:
-    com.vixen: DEBUG
-    org.springframework: INFO
+    com.vixen: INFO
+    org.springframework.security: WARN
+    org.mongodb.driver: WARN
