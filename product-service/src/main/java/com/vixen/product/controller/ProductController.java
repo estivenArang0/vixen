@@ -51,6 +51,15 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/slug/{slug}")
+    @Operation(summary = "Get a product by slug")
+    public ResponseEntity<ApiResponse<ProductDTO>> getProductBySlug(@PathVariable String slug) {
+        return productService.getProductBySlug(slug)
+                .map(ApiResponse::success)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/sku/{sku}")
     @Operation(summary = "Get a product by SKU")
     public ResponseEntity<ApiResponse<ProductDTO>> getProductBySku(@PathVariable String sku) {
@@ -72,10 +81,10 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.success(productService.getAllProducts(pageable)));
     }
 
-    @GetMapping("/category/{category}")
-    @Operation(summary = "Get products by category")
-    public ResponseEntity<ApiResponse<List<ProductDTO>>> getProductsByCategory(@PathVariable String category) {
-        return ResponseEntity.ok(ApiResponse.success(productService.getProductsByCategory(category)));
+    @GetMapping("/category/{categoryId}")
+    @Operation(summary = "Get products by category ID")
+    public ResponseEntity<ApiResponse<List<ProductDTO>>> getProductsByCategory(@PathVariable String categoryId) {
+        return ResponseEntity.ok(ApiResponse.success(productService.getProductsByCategory(categoryId)));
     }
 
     @GetMapping("/brand/{brand}")
@@ -90,15 +99,6 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.success(productService.getActiveProducts()));
     }
 
-    @PutMapping("/{id}/stock")
-    @Operation(summary = "Update product stock")
-    public ResponseEntity<ApiResponse<Void>> updateStock(
-            @PathVariable String id,
-            @RequestParam int quantity) {
-        productService.updateStock(id, quantity);
-        return ResponseEntity.ok(ApiResponse.success(null));
-    }
-
     @PutMapping("/{id}/rating")
     @Operation(summary = "Update product rating")
     public ResponseEntity<ApiResponse<Void>> updateRating(
@@ -107,4 +107,4 @@ public class ProductController {
         productService.updateRating(id, rating);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
-} 
+}

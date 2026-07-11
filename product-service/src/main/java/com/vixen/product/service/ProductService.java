@@ -1,7 +1,6 @@
 package com.vixen.product.service;
 
 import com.vixen.product.dto.ProductDTO;
-import com.vixen.product.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,11 +13,12 @@ public interface ProductService {
     void deleteProduct(String id);
     Optional<ProductDTO> getProductById(String id);
     Optional<ProductDTO> getProductBySku(String sku);
+    Optional<ProductDTO> getProductBySlug(String slug);
     List<ProductDTO> getAllProducts();
     Page<ProductDTO> getAllProducts(Pageable pageable);
-    List<ProductDTO> getProductsByCategory(String category);
+    List<ProductDTO> getProductsByCategory(String categoryId);
     List<ProductDTO> getProductsByBrand(String brand);
     List<ProductDTO> getActiveProducts();
     void updateStock(String id, int quantity);
     void updateRating(String id, double rating);
-} 
+}

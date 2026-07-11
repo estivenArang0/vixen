@@ -41,13 +41,22 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ProductDTO createProduct(ProductDTO productDTO) {
-        log.info("Creating new product: {}", productDTO);
+        log.info("Creating new product: {}", productDTO.getName());
+
         if (productRepository.existsBySku(productDTO.getSku())) {
             throw new BadRequestException("Product with SKU " + productDTO.getSku() + " already exists");
         }
+
+        // Auto-generate slug from name if not provided
+        if (productDTO.getSlug() == null || productDTO.getSlug().isBlank()) {
+            productDTO.setSlug(generateSlug(productDTO.getName()));
+        }
+
         Product product = productMapper.toEntity(productDTO);
+        product.setCategoryId(productDTO.getCategoryId());
         product = productRepository.save(product);
         indexToElasticsearch(product);
+        log.info("Product created successfully with id: {}", product.getId());
         return productMapper.toDTO(product);
     }
 
@@ -55,13 +64,22 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductDTO updateProduct(String id, ProductDTO productDTO) {
         log.info("Updating product with id: {}", id);
+
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 
+        // Update slug if name changed
+        if (productDTO.getName() != null && !productDTO.getName().equals(existingProduct.getName())) {
+            productDTO.setSlug(generateSlug(productDTO.getName()));
+        }
+
         Product updatedProduct = productMapper.toEntity(productDTO);
         updatedProduct.setId(existingProduct.getId());
+        updatedProduct.setCategoryId(productDTO.getCategoryId());
+        updatedProduct.setCreatedAt(existingProduct.getCreatedAt());
         updatedProduct = productRepository.save(updatedProduct);
         indexToElasticsearch(updatedProduct);
+        log.info("Product updated successfully: {}", id);
         return productMapper.toDTO(updatedProduct);
     }
 
@@ -97,6 +115,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Optional<ProductDTO> getProductBySlug(String slug) {
+        log.info("Getting product with slug: {}", slug);
+        return productRepository.findBySlug(slug)
+                .map(productMapper::toDTO);
+    }
+
+    @Override
     public List<ProductDTO> getAllProducts() {
         log.info("Getting all products");
         return productRepository.findAll().stream()
@@ -112,9 +137,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDTO> getProductsByCategory(String category) {
-        log.info("Getting products by category: {}", category);
-        return productRepository.findByCategory(category).stream()
+    public List<ProductDTO> getProductsByCategory(String categoryId) {
+        log.info("Getting products by categoryId: {}", categoryId);
+        return productRepository.findByCategoryId(categoryId).stream()
                 .map(productMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -130,7 +155,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDTO> getActiveProducts() {
         log.info("Getting active products");
-        return productRepository.findByActive(true).stream()
+        return productRepository.findByActiveTrue().stream()
                 .map(productMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -138,12 +163,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void updateStock(String id, int quantity) {
-        log.info("Updating stock for product with id: {}", id);
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
-        product.setStockQuantity(quantity);
-        product = productRepository.save(product);
-        indexToElasticsearch(product);
+        log.info("Updating stock: stock management is now handled via VariantService for product: {}", id);
+        // Stock is now managed per-variant through VariantService
+        throw new BadRequestException(
+                "Stock management is now handled per variant. Use /api/v1/variants/{id}/stock endpoint.");
     }
 
     @Override
@@ -165,4 +188,20 @@ public class ProductServiceImpl implements ProductService {
             log.warn("Failed to index product in Elasticsearch: {}", product.getId(), e);
         }
     }
-} 
+
+    private String generateSlug(String name) {
+        return name.toLowerCase()
+                .trim()
+                .replaceAll("[^a-z0-9áéíóúüñ\\s-]", "")
+                .replaceAll("á", "a")
+                .replaceAll("é", "e")
+                .replaceAll("í", "i")
+                .replaceAll("ó", "o")
+                .replaceAll("ú", "u")
+                .replaceAll("ü", "u")
+                .replaceAll("ñ", "n")
+                .replaceAll("\\s+", "-")
+                .replaceAll("-+", "-")
+                .replaceAll("^-|-$", "");
+    }
+}

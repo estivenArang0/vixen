@@ -29,6 +29,7 @@ import AdminUsersListPage from '../pages/admin/UsersListPage';
 import ReviewModerationPage from '../pages/admin/ReviewModerationPage';
 import ShipmentsPage from '../pages/admin/ShipmentsPage';
 import BannersPage from '../pages/admin/BannersPage';
+import CategoriesPage from '../pages/admin/CategoriesPage';
 
 import NotFoundPage from '../pages/NotFoundPage';
 
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
       { path: '/', element: <HomePage /> },
       { path: '/products', element: <ProductListPage /> },
       { path: '/products/:id', element: <ProductDetailPage /> },
+      { path: '/products/slug/:slug', element: <ProductDetailPage /> },
 
       {
         element: <PublicOnlyRoute />,
@@ -74,6 +76,7 @@ export const router = createBrowserRouter([
           { path: '/admin/products', element: <AdminProductsListPage /> },
           { path: '/admin/products/new', element: <AdminProductFormPage /> },
           { path: '/admin/products/:id/edit', element: <AdminProductFormPage /> },
+          { path: '/admin/categories', element: <CategoriesPage /> },
           { path: '/admin/orders', element: <AdminOrdersListPage /> },
           { path: '/admin/orders/:id', element: <AdminOrderDetailPage /> },
           { path: '/admin/users', element: <AdminUsersListPage /> },

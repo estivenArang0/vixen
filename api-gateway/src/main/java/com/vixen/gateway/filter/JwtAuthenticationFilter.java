@@ -36,6 +36,8 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     );
 
     private static final String PRODUCTS_PATH = "/api/v1/products/**";
+    private static final String CATEGORIES_PATH = "/api/v1/categories/**";
+    private static final String VARIANTS_PATH = "/api/v1/variants/**";
 
     private final SecretKey key;
 
@@ -53,8 +55,11 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        // Allow GET requests to products without authentication
-        if (pathMatcher.match(PRODUCTS_PATH, path) && HttpMethod.GET.equals(request.getMethod())) {
+        // Allow GET requests to products, categories, and variants without authentication
+        boolean isGet = HttpMethod.GET.equals(request.getMethod());
+        if (pathMatcher.match(PRODUCTS_PATH, path) && isGet ||
+            pathMatcher.match(CATEGORIES_PATH, path) && isGet ||
+            pathMatcher.match(VARIANTS_PATH, path) && isGet) {
             return chain.filter(exchange);
         }
 

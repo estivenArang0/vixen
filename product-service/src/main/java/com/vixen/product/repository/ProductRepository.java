@@ -10,8 +10,9 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends BaseRepository<Product> {
     Optional<Product> findBySku(String sku);
-    List<Product> findByCategory(String category);
+    Optional<Product> findBySlug(String slug);
+    List<Product> findByCategoryId(String categoryId);
     List<Product> findByBrand(String brand);
-    List<Product> findByActive(boolean active);
+    List<Product> findByActiveTrue();
     boolean existsBySku(String sku);
-} 
+}

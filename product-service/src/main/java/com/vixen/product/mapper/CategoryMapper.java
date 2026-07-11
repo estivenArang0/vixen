@@ -1,19 +1,18 @@
 package com.vixen.product.mapper;
 
-import com.vixen.product.dto.ProductDTO;
-import com.vixen.product.model.Product;
+import com.vixen.product.dto.CategoryDTO;
+import com.vixen.product.model.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface ProductMapper {
+public interface CategoryMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "deleted", ignore = true)
-    @Mapping(target = "categoryId", ignore = true)
-    Product toEntity(ProductDTO dto);
+    Category toEntity(CategoryDTO dto);
 
-    ProductDTO toDTO(Product entity);
+    CategoryDTO toDTO(Category entity);
 }
