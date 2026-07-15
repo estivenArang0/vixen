@@ -13,6 +13,9 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: 6379
 
+internal:
+  service-secret: ${INTERNAL_SERVICE_SECRET:c1hc1qd69law8swwpc12n9awigzlf3gvou0u00sk2hcjtjdu}
+
 stripe:
   secret-key: ${STRIPE_SECRET_KEY:your_stripe_secret_key_here}
 

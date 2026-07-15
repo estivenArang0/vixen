@@ -41,8 +41,13 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
     private final SecretKey key;
 
-    public JwtAuthenticationFilter(@Value("${jwt.secret}") String secret) {
+    private final String internalServiceSecret;
+
+    public JwtAuthenticationFilter(
+            @Value("${jwt.secret}") String secret,
+            @Value("${internal.service-secret}") String internalServiceSecret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.internalServiceSecret = internalServiceSecret;
     }
 
     @Override
@@ -83,10 +88,11 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             List<String> roles = claims.get("roles", List.class);
             String rolesStr = roles != null ? String.join(",", roles) : "";
 
-            // Add user info headers to downstream request
+            // Add user info headers and internal secret to downstream request
             ServerHttpRequest modifiedRequest = request.mutate()
                     .header("X-User-Id", userId)
                     .header("X-User-Roles", rolesStr)
+                    .header("X-Internal-Secret", internalServiceSecret)
                     .build();
 
             return chain.filter(exchange.mutate().request(modifiedRequest).build());
